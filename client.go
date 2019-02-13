@@ -87,19 +87,28 @@ func (c *Client) callApi(req *http.Request, bar interface{}) error {
 		return err
 	}
 
+	if err = c.handleResponse(resp, bar); err != nil {
+		return errors.New("error handling auth response " + err.Error())
+	}
+
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		var e topdeliveryErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&e)
-		return errors.New("bad response " + err.Error() + e.Error + e.Message)
+	return nil
+}
 
+func (c *Client) handleResponse(response *http.Response, bar interface{}) error {
+	if response.StatusCode != http.StatusOK {
+		var e topdeliveryErrorResponse
+		if err := json.NewDecoder(response.Body).Decode(&e); err != nil {
+			return errors.New("bad response " + err.Error() + e.Error + e.Message)
+		}
+		return errors.New("bad response " + e.Error + e.Message)
 	}
 
 	var f topdeliverySuccessResponse
-	err = json.NewDecoder(resp.Body).Decode(&f)
+	err := json.NewDecoder(response.Body).Decode(&f)
 	if err != nil {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		bodyBytes, _ := ioutil.ReadAll(response.Body)
 		return errors.New("error unmarshaling " + err.Error() + string(bodyBytes))
 	}
 
@@ -131,32 +140,19 @@ func (c *Client) updateToken() error {
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		var e topdeliveryErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&e)
-		return errors.New("bad auth response " + err.Error() + e.Error + e.Message)
-	}
+	bar := &authData{}
 
-	var f topdeliverySuccessResponse
-	err = json.NewDecoder(resp.Body).Decode(&f)
-	if err != nil {
-		return err
-	}
-
-	var rows authData
-	err = json.Unmarshal(f.Data.Rows, &rows)
-	if err != nil {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		return errors.New("in auth response topdelivery mistake token. Response: " + string(bodyBytes))
+	if err = c.handleResponse(resp, bar); err != nil {
+		return errors.New("error handling auth response " + err.Error())
 	}
 
 	token := Token{}
-	if err := utils.Decode(rows.Token, &token); err != nil {
+	if err := utils.Decode(bar.Token, &token); err != nil {
 		return errors.New("error token decoding: " + err.Error())
 	}
 
 	c.expiredAt = token.Exp
-	c.token = rows.Token
+	c.token = bar.Token
 
 	return nil
 }
