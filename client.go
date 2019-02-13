@@ -130,7 +130,11 @@ func (c *Client) updateToken() error {
 	}
 
 	values := map[string]string{"login": c.config.Login, "password": c.config.Password}
-	jsonValue, _ := json.Marshal(values)
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		return err
+	}
+
 	resp, err := http.Post(c.config.BaseUrl+"/Auth", "application/json", bytes.NewBuffer(jsonValue))
 
 	if err != nil {
