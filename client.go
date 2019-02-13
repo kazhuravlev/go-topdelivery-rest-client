@@ -136,7 +136,6 @@ func (c *Client) updateToken() error {
 	}
 
 	resp, err := http.Post(c.config.BaseUrl+"/Auth", "application/json", bytes.NewBuffer(jsonValue))
-
 	if err != nil {
 		return errors.New("error auth request " + err.Error())
 	}
@@ -144,12 +143,11 @@ func (c *Client) updateToken() error {
 	defer resp.Body.Close()
 
 	bar := &authData{}
-
-	if err = c.handleResponse(resp, bar); err != nil {
+	if err := c.handleResponse(resp, bar); err != nil {
 		return errors.New("error handling auth response " + err.Error())
 	}
 
-	token := Token{}
+	var token Token
 	if err := utils.Decode(bar.Token, &token); err != nil {
 		return errors.New("error token decoding: " + err.Error())
 	}
