@@ -86,12 +86,11 @@ func (c *Client) callApi(req *http.Request, bar interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	if err = c.handleResponse(resp, bar); err != nil {
 		return errors.New("error handling auth response " + err.Error())
 	}
-
-	defer resp.Body.Close()
 
 	return nil
 }
