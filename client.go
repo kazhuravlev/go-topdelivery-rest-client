@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"go-topdelivery-rest-client/utils"
+	"github.com/computerslong/go-topdelivery-rest-client/utils"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -13,7 +13,6 @@ import (
 const tokenName = "istopdeliveryru-token"
 
 type (
-
 	topdeliverySuccessResponse struct {
 		Status    int
 		Error     string
@@ -88,23 +87,23 @@ func (c *Client) callApi(req *http.Request, bar interface{}) error {
 		return err
 	}
 
-	defer resp.Body.Close();
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		var e topdeliveryErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&e);
+		err = json.NewDecoder(resp.Body).Decode(&e)
 		return errors.New("bad response " + err.Error() + e.Error + e.Message)
 
 	}
 
 	var f topdeliverySuccessResponse
-	err = json.NewDecoder(resp.Body).Decode(&f);
+	err = json.NewDecoder(resp.Body).Decode(&f)
 	if err != nil {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 		return errors.New("error unmarshaling " + err.Error() + string(bodyBytes))
 	}
 
-	err = json.Unmarshal(f.Data.Rows, &bar);
+	err = json.Unmarshal(f.Data.Rows, &bar)
 	if err != nil {
 		return errors.New("error unmarshaling " + err.Error() + string(f.Data.Rows))
 	}
@@ -130,22 +129,22 @@ func (c *Client) updateToken() error {
 		return errors.New("error auth request " + err.Error())
 	}
 
-	defer resp.Body.Close();
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		var e topdeliveryErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&e);
+		err = json.NewDecoder(resp.Body).Decode(&e)
 		return errors.New("bad auth response " + err.Error() + e.Error + e.Message)
 	}
 
 	var f topdeliverySuccessResponse
-	err = json.NewDecoder(resp.Body).Decode(&f);
+	err = json.NewDecoder(resp.Body).Decode(&f)
 	if err != nil {
 		return err
 	}
 
 	var rows authData
-	err = json.Unmarshal(f.Data.Rows, &rows);
+	err = json.Unmarshal(f.Data.Rows, &rows)
 	if err != nil {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
 		return errors.New("in auth response topdelivery mistake token. Response: " + string(bodyBytes))

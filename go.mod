@@ -1,1 +1,1 @@
-module go-topdelivery-rest-client
+module github.com/computerslong/go-topdelivery-rest-client
