@@ -61,7 +61,7 @@ type (
 	}
 )
 
-func NewClient(baseUrl string, login string, password string) *Client {
+func New(baseUrl string, login string, password string) (*Client, error) {
 	return &Client{
 		httpClient: http.DefaultClient,
 		config: config{
@@ -69,7 +69,7 @@ func NewClient(baseUrl string, login string, password string) *Client {
 			Login:    login,
 			Password: password,
 		},
-	}
+	}, nil
 }
 
 func (c *Client) callApi(req *http.Request, bar interface{}) error {
