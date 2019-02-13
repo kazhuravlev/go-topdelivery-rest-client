@@ -22,9 +22,9 @@ type Item struct {
 	Weight          int
 }
 
-func (c *Client) GetItems(searchString string) (*[]Item, error) {
+func (c *Client) GetItems(searchString string) ([]Item, error) {
 
-	req, err := http.NewRequest("GET", c.config.BaseUrl+ "/Order/Item" + searchString, nil)
+	req, err := http.NewRequest("GET", c.config.BaseUrl+"/Order/Item"+searchString, nil)
 
 	if err != nil {
 		return nil, errors.New("error creating GetItems request: " + err.Error())
@@ -32,9 +32,9 @@ func (c *Client) GetItems(searchString string) (*[]Item, error) {
 
 	var items []Item
 
-	if err := c.callApi(req,&items); err != nil {
+	if err := c.callApi(req, &items); err != nil {
 		return nil, err
 	}
 
-	return &items, nil
+	return items, nil
 }
