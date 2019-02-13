@@ -49,7 +49,7 @@ func (q *query) ToString() (queryString string, err error) {
 	queryString = "?"
 
 	if len(q.Search.Groups) > 0 || len(q.Search.Rules) > 0 {
-		queryBytes, err := json.Marshal(q.Search);
+		queryBytes, err := json.Marshal(q.Search)
 		if err != nil {
 			return "", errors.New("error marshaling query Group" + err.Error())
 		}
@@ -57,7 +57,7 @@ func (q *query) ToString() (queryString string, err error) {
 	}
 
 	if q.Sort.Sidx != "" && q.Sort.Sord != "" {
-		queryBytes, err := json.Marshal(q.Search);
+		queryBytes, err := json.Marshal(q.Search)
 		if err != nil {
 			return "", errors.New("error marshaling query Sort" + err.Error())
 		}
@@ -65,7 +65,7 @@ func (q *query) ToString() (queryString string, err error) {
 	}
 
 	if q.Limit.Rows > 0 || q.Limit.Page > 0 {
-		queryBytes, err := json.Marshal(q.Limit);
+		queryBytes, err := json.Marshal(q.Limit)
 		if err != nil {
 			return "", errors.New("error marshaling query Limit" + err.Error())
 		}
